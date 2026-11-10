@@ -278,7 +278,13 @@ export const settingsSchema = z.object({
   availabilityNote: optionalText(200),
   defaultSocialImage: optionalText(600),
   analyticsId: z
-    .union([z.string().trim().regex(/^G-[A-Z0-9]{4,20}$/i, "Use a GA4 ID like G-XXXXXXXXXX."), z.literal("")])
+    .union([
+      z
+        .string()
+        .trim()
+        .regex(/^G(TM)?-[A-Z0-9]{4,20}$/i, "Use a GA4 ID (G-XXXXXXXXXX) or GTM ID (GTM-XXXXXXX)."),
+      z.literal(""),
+    ])
     .nullable()
     .optional(),
   googleVerification: optionalText(300),

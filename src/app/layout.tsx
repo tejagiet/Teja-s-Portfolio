@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 
 import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { GoogleTagManager } from "@/components/google-tag-manager";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { db } from "@/lib/db";
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body>
+        <GoogleTagManager />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -40,7 +40,8 @@ In your Vercel Project Settings, navigate to **Settings** → **Environment Vari
 | `CLOUDINARY_FOLDER` | **Yes** | `teja-portfolio` |
 | `IP_HASH_SALT` | **Yes** | Any unique random string |
 | `ANALYTICS_SALT` | **Yes** | Any unique random string |
-| `NEXT_PUBLIC_SITE_URL` | *Optional* | Your custom domain (e.g. `https://tejamanikanta.com`). If left blank, automatically resolves to your Vercel URL. |
+| `NEXT_PUBLIC_SITE_URL` | **Yes** | `https://teja.gietpoly.in` (custom production domain) |
+| `AUTH_URL` | **Yes** | `https://teja.gietpoly.in` |
 | `RESEND_API_KEY` | *Optional* | Resend API key for transactional email notifications. |
 | `PAGESPEED_API_KEY` | *Optional* | Google PageSpeed Insights API key for the admin SEO panel. |
 
