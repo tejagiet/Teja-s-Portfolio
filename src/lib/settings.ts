@@ -19,12 +19,25 @@ export type PublicSettings = {
   updatedAt: Date;
 };
 
+function resolveFallbackSiteUrl(): string {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  }
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`.replace(/\/$/, "");
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
+  }
+  return "http://localhost:3000";
+}
+
 export const defaultSettings: PublicSettings = {
   id: "singleton",
   siteName: "Teja Manikanta",
   siteDescription:
     "Portfolio of Teja Manikanta, a full-stack developer and engineering student focused on web applications, backend systems, databases and cloud solutions.",
-  siteUrl: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),
+  siteUrl: resolveFallbackSiteUrl(),
   footerNote: null,
   contactEmail: null,
   availabilityNote: null,
@@ -43,7 +56,7 @@ export async function getSiteSettings(): Promise<PublicSettings> {
     if (!settings) return defaultSettings;
     return {
       ...settings,
-      siteUrl: (settings.siteUrl || defaultSettings.siteUrl).replace(/\/$/, ""),
+      siteUrl: (settings.siteUrl || resolveFallbackSiteUrl()).replace(/\/$/, ""),
     };
   } catch (error) {
     console.error("[settings]", error);
@@ -52,5 +65,5 @@ export async function getSiteSettings(): Promise<PublicSettings> {
 }
 
 export function siteUrlFromEnv() {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  return resolveFallbackSiteUrl();
 }
