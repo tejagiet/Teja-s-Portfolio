@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Plus, Save } from "lucide-react";
+import { Images, Loader2, Plus, Save } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { ConfirmDelete } from "@/components/admin/confirm-delete";
 import { ImageCropUpload } from "@/components/admin/image-crop-upload";
+import { MediaPickerModal } from "@/components/admin/media-picker-modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import type { ActionState } from "@/lib/validation";
@@ -32,6 +33,7 @@ export function ProjectGalleryManager({
   const [pendingUrl, setPendingUrl] = useState("");
   const [alt, setAlt] = useState("");
   const [pending, startTransition] = useTransition();
+  const [showLibrary, setShowLibrary] = useState(false);
   const router = useRouter();
 
   const add = () => {
@@ -78,21 +80,40 @@ export function ProjectGalleryManager({
         <div className="rounded-xl border border-dashed border-border p-3">
           <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-lg bg-muted/50">
             {pendingUrl ? (
-              <Image src={pendingUrl} alt="Gallery preview" fill sizes="320px" className="object-cover" />
+              <Image
+                src={pendingUrl}
+                alt="Gallery preview"
+                fill
+                sizes="(max-width: 768px) 100vw, 640px"
+                quality={95}
+                className="object-cover"
+              />
             ) : (
               <span className="text-[10px] text-muted-foreground">No image selected</span>
             )}
           </div>
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-[10px] font-medium text-muted-foreground">Add a new image</span>
-            <ImageCropUpload
-              uploadAction={uploadAction}
-              fields={{ folder: "projects" }}
-              aspect={16 / 10}
-              label="Upload"
-              variant="ghost"
-              onUploaded={setPendingUrl}
-            />
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-1">
+            <span className="text-[10px] font-medium text-muted-foreground">Add image:</span>
+            <div className="flex items-center gap-1">
+              <ImageCropUpload
+                uploadAction={uploadAction}
+                fields={{ folder: "projects" }}
+                aspect={16 / 10}
+                label="Upload"
+                variant="ghost"
+                onUploaded={setPendingUrl}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowLibrary(true)}
+                title="Select existing image from media library"
+              >
+                <Images className="h-3.5 w-3.5" />
+                Library
+              </Button>
+            </div>
           </div>
           <div className="mt-2">
             <Label htmlFor="gallery-alt" className="text-[10px]">
@@ -111,6 +132,17 @@ export function ProjectGalleryManager({
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
             Add to gallery
           </Button>
+
+          <MediaPickerModal
+            open={showLibrary}
+            onClose={() => setShowLibrary(false)}
+            onSelect={(url) => {
+              setPendingUrl(url);
+              setShowLibrary(false);
+            }}
+            title="Choose Gallery Image from Media Library"
+            currentUrl={pendingUrl}
+          />
         </div>
       </div>
     </section>

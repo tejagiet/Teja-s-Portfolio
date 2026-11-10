@@ -132,7 +132,8 @@ export function ResumeDocument({
                 src={content.profile.photoUrl}
                 alt={content.profile.name}
                 fill
-                sizes="72px"
+                sizes="256px"
+                quality={95}
                 className="object-cover"
               />
             </div>
@@ -184,7 +185,8 @@ export function ResumeDocument({
                   src={content.profile.photoUrl}
                   alt={content.profile.name}
                   fill
-                  sizes="72px"
+                  sizes="256px"
+                  quality={95}
                   className="object-cover"
                 />
               </div>
@@ -246,7 +248,8 @@ export function ResumeDocument({
                 src={content.profile.photoUrl}
                 alt={content.profile.name}
                 fill
-                sizes="82px"
+                sizes="256px"
+                quality={95}
                 className="object-cover"
               />
             </div>

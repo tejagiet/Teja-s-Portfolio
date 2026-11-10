@@ -15,8 +15,8 @@ async function readFile(formData: FormData) {
     throw new Error("Choose an image to upload.");
   }
   const file = entry as File;
-  if (file.size > 8 * 1024 * 1024) {
-    throw new Error("Images must be 8 MB or smaller.");
+  if (file.size > 25 * 1024 * 1024) {
+    throw new Error("Images must be 25 MB or smaller.");
   }
   return {
     buffer: Buffer.from(await file.arrayBuffer()),
@@ -290,4 +290,97 @@ export async function deleteMediaAction(id: string): Promise<ActionState> {
     console.error("[media-delete]", error);
     return actionError("The media asset could not be deleted.");
   }
+}
+
+/**
+ * Re-uses an existing photo from the media library as profile photo, about photo, or avatar.
+ */
+export async function selectExistingProfilePhotoAction(
+  kind: "profile" | "about" | "avatar",
+  url: string,
+): Promise<ActionState> {
+  const user = await assertAdmin();
+  if (!url) return actionError("No image URL provided.");
+
+  try {
+    if (kind === "avatar") {
+      await db.user.update({
+        where: { id: user.id },
+        data: { image: url, previousImage: user.image },
+      });
+    } else {
+      const profile = await db.profile.findFirst();
+      if (!profile) return actionError("Profile not found.");
+      await db.profile.update({
+        where: { id: profile.id },
+        data:
+          kind === "profile"
+            ? {
+                profilePhotoUrl: url,
+                previousProfilePhotoUrl: profile.profilePhotoUrl,
+              }
+            : {
+                aboutPhotoUrl: url,
+                previousAboutPhotoUrl: profile.aboutPhotoUrl,
+              },
+      });
+      await syncResumeState(user.id);
+    }
+
+    await logActivity({
+      userId: user.id,
+      action: "UPDATE",
+      entityType: kind === "avatar" ? "account" : "profile",
+      description:
+        kind === "avatar"
+          ? "Selected existing image for admin avatar"
+          : kind === "profile"
+            ? "Selected existing image for public profile photo"
+            : "Selected existing image for about section photo",
+    });
+
+    revalidatePath("/", "layout");
+    revalidatePath("/admin/account");
+    revalidatePath("/admin/profile");
+    return actionSuccess("Photo updated from media library.", { url });
+  } catch (error) {
+    console.error("[selectProfilePhoto]", error);
+    return actionError(error instanceof Error ? error.message : "Failed to update photo.");
+  }
+}
+
+/**
+ * Fetches all media assets for the MediaPicker modal so users can reuse photos across sections.
+ */
+export async function getMediaAssetsAction(): Promise<{
+  id: string;
+  url: string;
+  secureUrl: string;
+  altText: string | null;
+  folder: string;
+  width: number | null;
+  height: number | null;
+  format: string | null;
+  createdAt: string;
+}[]> {
+  await assertAdmin();
+  const assets = await db.mediaAsset.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 120,
+    select: {
+      id: true,
+      url: true,
+      secureUrl: true,
+      altText: true,
+      folder: true,
+      width: true,
+      height: true,
+      format: true,
+      createdAt: true,
+    },
+  });
+  return assets.map((a) => ({
+    ...a,
+    createdAt: a.createdAt.toISOString(),
+  }));
 }

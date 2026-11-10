@@ -7,7 +7,7 @@ import path from "node:path";
 import sharp from "sharp";
 import type { MediaProvider } from "@prisma/client";
 
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 25 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"]);
 
 export type UploadedImage = {
@@ -39,7 +39,7 @@ function signParams(params: Record<string, string | number>) {
     .digest("hex");
 }
 
-export async function processImage(input: Buffer, maxDimension = 2200) {
+export async function processImage(input: Buffer, maxDimension = 4096) {
   const image = sharp(input, { failOn: "none" }).rotate();
   const metadata = await image.metadata();
   const optimized = await image
@@ -49,7 +49,7 @@ export async function processImage(input: Buffer, maxDimension = 2200) {
       fit: "inside",
       withoutEnlargement: true,
     })
-    .webp({ quality: 84, effort: 4 })
+    .webp({ quality: 95, effort: 5 })
     .toBuffer({ resolveWithObject: true });
 
   return {
@@ -62,7 +62,7 @@ export async function processImage(input: Buffer, maxDimension = 2200) {
 
 export async function uploadImage(input: Buffer, options?: { folder?: string; mimeType?: string }) {
   if (!input.byteLength) throw new Error("The uploaded file is empty.");
-  if (input.byteLength > MAX_BYTES) throw new Error("Images must be 8 MB or smaller.");
+  if (input.byteLength > MAX_BYTES) throw new Error("Images must be 25 MB or smaller.");
   if (options?.mimeType && !ALLOWED.has(options.mimeType)) {
     throw new Error("Only JPEG, PNG, WebP, AVIF and GIF images are supported.");
   }

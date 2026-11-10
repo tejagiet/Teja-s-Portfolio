@@ -93,8 +93,8 @@ async function loadPhoto(
     if (!response.ok) return null;
     const buffer = Buffer.from(await response.arrayBuffer());
     const jpeg = await sharp(buffer)
-      .resize(400, 400, { fit: "cover" })
-      .jpeg({ quality: 88 })
+      .resize(800, 800, { fit: "cover", withoutEnlargement: false })
+      .jpeg({ quality: 95 })
       .toBuffer();
     return await pdf.embedJpg(jpeg);
   } catch (error) {

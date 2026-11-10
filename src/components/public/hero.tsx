@@ -150,7 +150,8 @@ export function Hero({
                     alt={`${profile.displayName} portrait`}
                     fill
                     priority
-                    sizes="(max-width: 1024px) 80vw, 420px"
+                    sizes="(max-width: 1024px) 100vw, 1200px"
+                    quality={95}
                     className="object-cover"
                   />
                 ) : (

@@ -1,10 +1,12 @@
 "use client";
 
-import { ImageIcon, Link2, X } from "lucide-react";
+import { ImageIcon, Images, Link2, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { ImageCropUpload } from "@/components/admin/image-crop-upload";
+import { MediaPickerModal } from "@/components/admin/media-picker-modal";
+import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import type { ActionState } from "@/lib/validation";
 
@@ -16,7 +18,7 @@ export function ImageField({
   folder = "media",
   aspect = 16 / 9,
   hint,
-  maxDimension = 2000,
+  maxDimension = 4096,
   onChange,
 }: {
   name: string;
@@ -30,6 +32,7 @@ export function ImageField({
   onChange?: (url: string) => void;
 }) {
   const [current, setCurrent] = useState(value || "");
+  const [showLibrary, setShowLibrary] = useState(false);
 
   useEffect(() => setCurrent(value || ""), [value]);
 
@@ -54,6 +57,18 @@ export function ImageField({
             variant="ghost"
             onUploaded={update}
           />
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowLibrary(true)}
+            title="Choose an existing image from the media library"
+          >
+            <Images className="h-3.5 w-3.5" />
+            Media library
+          </Button>
+
           {current ? (
             <button
               type="button"
@@ -71,11 +86,18 @@ export function ImageField({
 
       <div className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-muted/50">
         {current ? (
-          <Image src={current} alt={label} fill sizes="640px" className="object-cover" />
+          <Image
+            src={current}
+            alt={label}
+            fill
+            sizes="(max-width: 768px) 100vw, 1200px"
+            quality={95}
+            className="object-cover"
+          />
         ) : (
           <div className="flex flex-col items-center gap-1.5 text-muted-foreground">
             <ImageIcon className="h-6 w-6" aria-hidden />
-            <span className="text-[10px]">Upload an image or paste a URL below</span>
+            <span className="text-[10px]">Upload an image, pick from library, or paste a URL below</span>
           </div>
         )}
       </div>
@@ -91,6 +113,14 @@ export function ImageField({
         />
       </div>
       {hint ? <p className="mt-1.5 text-[10px] leading-relaxed text-muted-foreground">{hint}</p> : null}
+
+      <MediaPickerModal
+        open={showLibrary}
+        onClose={() => setShowLibrary(false)}
+        onSelect={update}
+        title={`Choose ${label} from Media Library`}
+        currentUrl={current}
+      />
     </div>
   );
 }

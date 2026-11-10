@@ -27,7 +27,8 @@ export function AboutSection({
                 src={profile.aboutPhotoUrl || profile.profilePhotoUrl || ""}
                 alt={`${profile.displayName} — about`}
                 fill
-                sizes="(max-width: 1024px) 100vw, 380px"
+                sizes="(max-width: 1024px) 100vw, 1200px"
+                quality={95}
                 className="object-cover"
               />
             ) : (

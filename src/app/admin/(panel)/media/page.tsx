@@ -124,7 +124,8 @@ export default async function MediaLibraryPage({
                       src={asset.secureUrl || asset.url}
                       alt={asset.altText || "Uploaded media asset"}
                       fill
-                      sizes="(max-width: 768px) 100vw, 320px"
+                      sizes="(max-width: 768px) 100vw, 480px"
+                      quality={90}
                       className="object-cover"
                     />
                     <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-black/55 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-white backdrop-blur">

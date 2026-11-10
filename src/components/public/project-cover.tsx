@@ -40,7 +40,8 @@ export function ProjectCover({
           alt={alt || `${title} cover image`}
           fill
           priority={priority}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+          quality={95}
           className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
         />
       ) : (
